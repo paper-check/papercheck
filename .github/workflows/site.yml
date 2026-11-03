@@ -1,0 +1,58 @@
+name: site
+on:
+  push: { branches: [main] }
+  issues: { types: [opened, labeled] }
+  schedule: [{ cron: "*/30 * * * *" }]
+  workflow_dispatch:
+    inputs:
+      hash: { description: "Key hash (64 hex) to grant access manually", required: false }
+      days: { description: "Days of access", required: false, default: "30" }
+      revoke: { description: "Key hash to revoke", required: false }
+concurrency: { group: site, cancel-in-progress: false }
+permissions: { contents: write, issues: write, pages: write, id-token: write }
+jobs:
+  access:
+    runs-on: ubuntu-latest
+    outputs: { changed: "${{ steps.run.outputs.changed }}" }
+    steps:
+      - uses: actions/checkout@v4
+      - run: gh label create approve --color 1f8f68 --description "Approve trial access" || true
+        env: { GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}", GH_REPO: "${{ github.repository }}" }
+      - name: Keepalive (scheduled workflows pause after 60 idle days)
+        if: github.event_name == 'schedule'
+        run: |
+          d=$(date +%Y-%m)
+          if [ "$(cat .heartbeat 2>/dev/null)" != "$d" ]; then
+            echo "$d" > .heartbeat
+            git config user.name "access-bot"; git config user.email "bot@users.noreply.github.com"
+            git add .heartbeat && git commit -m "heartbeat $d" && git push
+          fi
+      - id: run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          DISPATCH_HASH: ${{ inputs.hash }}
+          DISPATCH_DAYS: ${{ inputs.days }}
+          DISPATCH_REVOKE: ${{ inputs.revoke }}
+        run: node scripts/access.mjs
+      - name: Commit access list
+        if: steps.run.outputs.changed == 'true'
+        run: |
+          git config user.name "access-bot"; git config user.email "bot@users.noreply.github.com"
+          git add access.json && git commit -m "Update access list" && git push
+  deploy:
+    needs: access
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || needs.access.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: "${{ steps.d.outputs.page_url }}" }
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install && npm run build && cp config.json access.json admin.html dist/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: dist }
+      - id: d
+        uses: actions/deploy-pages@v4
