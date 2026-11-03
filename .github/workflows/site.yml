@@ -50,7 +50,7 @@ jobs:
         with: { ref: main }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-      - run: npm install && npm run build && cp config.json access.json admin.html dist/
+      - run: npm install && npm run build && cp config.json access.json dist/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with: { path: dist }

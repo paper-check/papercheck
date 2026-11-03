@@ -2,84 +2,44 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex"><title>PaperCheck | پنل مدیریت</title>
-<style>
-:root{color-scheme:light dark;--line:#8884;--bad:#e5484d;--ok:#1f8f68;--warn:#d9961b}
-body{font:15px/1.8 Tahoma,system-ui,sans-serif;max-width:960px;margin:0 auto;padding:20px}
-h1{font-size:24px;margin:0 0 4px}h2{font-size:17px;margin:28px 0 8px;border-bottom:2px solid var(--line);padding-bottom:4px}
-table{width:100%;border-collapse:collapse}td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:start}
-.k{display:flex;gap:12px;flex-wrap:wrap}.k div{border:1px solid var(--line);padding:8px 16px;min-width:110px}.k b{display:block;font-size:22px}
-.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}.m{opacity:.7;font-size:13px}
-code{direction:ltr;unicode-bidi:isolate}a{color:inherit}
-button{font:inherit;cursor:pointer;padding:3px 12px;margin-inline-end:6px}input{font:inherit;padding:6px;direction:ltr;width:100%;max-width:520px}
-.bars{display:flex;align-items:flex-end;gap:3px;height:60px}.bars i{flex:1;background:var(--ok);min-height:2px}
-#msg{position:sticky;top:0;padding:6px 0;font-weight:600}
-</style></head>
+<meta name="robots" content="noindex"><meta name="theme-color" content="#0f766e">
+<title>PaperCheck | پنل مدیریت</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Cpath d='M8 17l5 5 11-12' fill='none' stroke='white' stroke-width='3.5'/%3E%3C/svg%3E">
+<script type="module" src="./src/admin.js"></script>
+</head>
 <body>
-<h1>پنل مدیریت</h1>
-<div id="lg">
- <p class="m">برای ورود، یک توکن GitHub بده (Classic با دسترسی <code>repo</code>؛ یا Fine-grained با Issues، Actions و Contents). توکن فقط در همین تب و برای api.github.com استفاده می‌شود و با بستن تب پاک می‌شود. بدون توکن معتبر و دسترسی نوشتن به ریپو، پنل هیچ کاری نمی‌کند.</p>
- <label>ریپو (user/repo)</label><br><input id="repo"><br><br>
- <label>توکن</label><br><input id="tk" type="password" autocomplete="off"><br><br>
- <button id="in">ورود</button><span id="lerr" class="bad"></span>
+<div class="wrap stack">
+<header>
+ <span class="brand"><i>✓</i>PaperCheck <span class="tag">مدیریت</span></span>
+ <div class="tools"><button id="theme" aria-label="Theme">◐</button></div>
+</header>
+
+<div id="lg" class="card" style="max-width:560px;margin-inline:auto">
+ <h2>ورود</h2>
+ <p class="mute">یک توکن GitHub بده (Classic با دسترسی <code style="display:inline">repo</code>؛ یا Fine-grained با Issues، Actions و Contents). توکن فقط در همین تب و برای api.github.com استفاده می‌شود و با بستن تب پاک می‌شود. بدون توکنی که به ریپو دسترسی نوشتن دارد، پنل کاری نمی‌کند.</p>
+ <label for="repo">ریپو (user/repo)</label><input id="repo" dir="ltr">
+ <label for="tk">توکن</label><input id="tk" type="password" dir="ltr" autocomplete="off">
+ <button class="btn" id="in">ورود</button> <span id="lerr" class="bad" style="background:none"></span>
 </div>
+
 <div id="app" hidden>
  <div id="msg" aria-live="polite"></div>
- <button id="rf">تازه‌سازی</button><button id="out">خروج</button> <a id="al" target="_blank" rel="noopener">اجراهای Actions</a>
- <h2>کلیدها</h2><div class="k" id="kpi"></div><table id="keys"></table>
- <p><strong>فعال‌سازی دستی:</strong> <input id="gh" placeholder="هش ۶۴ حرفی کلید" style="max-width:420px"> <input id="gd" value="30" style="width:70px"> روز <button id="gb">فعال کن</button></p>
- <h2>درخواست‌های باز</h2><table id="issues"></table>
- <h2>مانیتورینگ</h2><div id="mon"></div>
- <h3>اجراهای اخیر</h3><table id="runs"></table>
- <h3>بازدید ریپو در GitHub (۱۴ روز؛ بازدید خود سایت نیست)</h3><div id="tr"></div>
- <h3>پرداخت‌های اخیر</h3><table id="pay"></table>
+ <div class="bar"><button class="btn alt sm" id="rf">تازه‌سازی</button><a class="btn alt sm" id="al" target="_blank" rel="noopener">اجراهای Actions</a><button class="btn alt sm" id="out">خروج</button></div>
+
+ <div class="kpis" id="kpi"></div>
+
+ <div class="card"><h2>کلیدها</h2><div class="scroll"><table class="tbl" id="keys"></table></div>
+  <div class="manual"><strong>فعال‌سازی دستی</strong>
+   <input id="gh" placeholder="هش ۶۴ حرفی کلید" dir="ltr"><input id="gd" value="30" dir="ltr" style="max-width:90px" aria-label="days"><button class="btn sm" id="gb">فعال کن</button></div></div>
+
+ <div class="card"><h2>درخواست‌های باز</h2><div class="scroll"><table class="tbl" id="issues"></table></div></div>
+
+ <div class="cols">
+  <div class="card"><h2>سلامت سیستم</h2><div id="mon"></div><div class="scroll"><table class="tbl" id="runs"></table></div></div>
+  <div class="card"><h2>پرداخت‌های اخیر</h2><div class="scroll"><table class="tbl" id="pay"></table></div>
+   <h2 style="margin-top:20px">بازدید ریپو در GitHub</h2><p class="mute">۱۴ روز اخیر؛ بازدید خود سایت نیست.</p><div id="tr"></div></div>
+ </div>
 </div>
-<script>
-const $=s=>document.querySelector(s),el=(t,x,c)=>{const e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;return e};
-const row=(t,cells)=>{const r=el('tr');cells.forEach(c=>{const d=el('td');c instanceof Node?d.append(c):d.textContent=c;r.append(d)});t.append(r)};
-const ago=ms=>{const m=Math.round(ms/6e4);return m<90?m+' دقیقه پیش':m<2880?Math.round(m/60)+' ساعت پیش':Math.round(m/1440)+' روز پیش'};
-let R='',BR='main',C={};
-const api=(p,o={})=>fetch('https://api.github.com'+p,{...o,headers:{Authorization:'Bearer '+(sessionStorage.getItem('adm_t')||''),Accept:'application/vnd.github+json','Content-Type':'application/json'}}).then(async r=>{if(r.status===204)return{};const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.message||r.status);return j});
-const msg=(t,c)=>{$('#msg').textContent=t;$('#msg').className=c||''};
-const btn=(t,f)=>{const b=el('button',t);b.onclick=async()=>{b.disabled=true;try{await f()}catch(e){msg('خطا: '+e.message,'bad')}b.disabled=false};return b};
-const act=i=>api(`/repos/${R}/actions/workflows/site.yml/dispatches`,{method:'POST',body:JSON.stringify({ref:BR,inputs:i})}).then(()=>msg('دستور ارسال شد؛ یکی دو دقیقه بعد «تازه‌سازی» را بزن.','ok'));
-const part=async(id,f)=>{try{await f()}catch(e){$(id).textContent='ناموفق: '+e.message}};
-async function load(){
- ['#kpi','#keys','#issues','#runs','#tr','#pay','#mon'].forEach(s=>$(s).textContent='');
- $('#al').href='https://github.com/'+R+'/actions';
- await part('#keys',async()=>{const c=await api(`/repos/${R}/contents/access.json`),ks=JSON.parse(atob(c.content.replace(/\n/g,''))).keys||[],today=new Date().toISOString().slice(0,10),act0=ks.filter(k=>k.exp>=today);
-  [['کل',ks.length],['فعال',act0.length],['منقضی',ks.length-act0.length],['پرداختی فعال',act0.filter(k=>k.plan==='pro').length]].forEach(([n,v])=>{const b=el('div');b.append(el('b',v),el('span',n));$('#kpi').append(b)});
-  row($('#keys'),['هش','نوع','انقضا','باقی‌مانده','عملیات']);
-  ks.slice().sort((a,b)=>b.exp.localeCompare(a.exp)).forEach(k=>{const left=Math.ceil((Date.parse(k.exp)-Date.now())/864e5),d=el('span');
-   d.append(btn('+۳۰ روز',()=>act({hash:k.h,days:'30'})),btn('لغو',()=>confirm('این کلید لغو شود؟')?act({revoke:k.h}):0));
-   row($('#keys'),[el('code',k.h.slice(0,10)+'…'),k.plan||'-',k.exp,left>=0?left+' روز':'منقضی',d])})});
- await part('#issues',async()=>{const is=(await api(`/repos/${R}/issues?state=open&per_page=30`)).filter(i=>!i.pull_request);
-  if(!is.length)row($('#issues'),['درخواست بازی نیست.']);
-  is.forEach(i=>{const a=el('a',i.title);a.href=i.html_url;a.target='_blank';a.rel='noopener';const d=el('span');
-   if(i.title.startsWith('[TRIAL]'))d.append(btn('تأیید',()=>api(`/repos/${R}/issues/${i.number}/labels`,{method:'POST',body:JSON.stringify({labels:['approve']})}).then(()=>msg('برچسب زده شد؛ ربات کلید را فعال می‌کند.','ok'))));
-   d.append(btn('بستن',()=>api(`/repos/${R}/issues/${i.number}`,{method:'PATCH',body:JSON.stringify({state:'closed'})}).then(()=>msg('بسته شد.','ok'))));
-   row($('#issues'),[a,ago(Date.now()-Date.parse(i.created_at)),d])})});
- await part('#runs',async()=>{const runs=(await api(`/repos/${R}/actions/runs?per_page=8`)).workflow_runs||[],sch=runs.find(r=>r.event==='schedule'),age=sch?Date.now()-Date.parse(sch.created_at):null;
-  const f=runs.slice(0,5).filter(r=>r.conclusion==='failure').length;
-  $('#mon').append(el('p',age==null?'اجرای زمان‌بندی‌شده‌ای دیده نشده.':age>3*36e5?'هشدار: آخرین اجرای زمان‌بندی‌شده '+ago(age)+' بوده؛ ممکن است متوقف شده باشد.':'زمان‌بندی فعال است ('+ago(age)+').',age==null||age>3*36e5?'warn':'ok'));
-  if(f)$('#mon').append(el('p',f+' اجرای ناموفق در ۵ اجرای اخیر.','bad'));
-  runs.slice(0,5).forEach(r=>row($('#runs'),[r.event,r.conclusion||r.status,ago(Date.now()-Date.parse(r.created_at))]))});
- await part('#mon',async()=>{for(const f of ['index.html','config.json','access.json']){const r=await fetch(f+'?'+Date.now());$('#mon').append(el('p','سایت / '+f+': '+(r.ok?'سالم':'خطا '+r.status),r.ok?'ok':'bad'))}
-  if(C.goatcounter){const a=el('a','آمار بازدید (GoatCounter)');a.href='https://'+C.goatcounter+'.goatcounter.com';a.target='_blank';$('#mon').append(a)}});
- await part('#tr',async()=>{const v=await api(`/repos/${R}/traffic/views`),b=el('div','','bars'),mx=Math.max(1,...v.views.map(x=>x.count));
-  v.views.forEach(x=>{const i=el('i');i.style.height=Math.round(100*x.count/mx)+'%';i.title=x.timestamp.slice(0,10)+': '+x.count;b.append(i)});
-  $('#tr').append(el('p','کل: '+v.count+' | یکتا: '+v.uniques),b);
-  const rf=await api(`/repos/${R}/traffic/popular/referrers`);rf.slice(0,5).forEach(x=>$('#tr').append(el('div',x.referrer+': '+x.count,'m')))});
- await part('#pay',async()=>{const p=await (await fetch('https://api.trongrid.io/v1/accounts/'+C.wallet+'/transactions/trc20?only_to=true&limit=10&contract_address=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t')).json();
-  (p.data||[]).forEach(x=>row($('#pay'),[(Number(x.value)/1e6)+' USDT',el('code',x.transaction_id.slice(0,12)+'…'),ago(Date.now()-x.block_timestamp)]));
-  if(!(p.data||[]).length)row($('#pay'),['تراکنشی دیده نشد.'])});
-}
-async function login(){const t=$('#tk').value.trim();if(t)sessionStorage.setItem('adm_t',t);R=$('#repo').value.trim();
- try{const r=await api('/repos/'+R);if(!r.permissions||!r.permissions.push)throw new Error('این توکن دسترسی نوشتن به ریپو ندارد');BR=r.default_branch;$('#tk').value='';$('#lg').hidden=true;$('#app').hidden=false;load()}
- catch(e){sessionStorage.removeItem('adm_t');$('#lerr').textContent=' ورود ناموفق: '+e.message}}
-$('#in').onclick=login;$('#rf').onclick=load;$('#out').onclick=()=>{sessionStorage.removeItem('adm_t');location.reload()};
-$('#gb').onclick=()=>{const h=$('#gh').value.trim().toLowerCase();if(!/^[0-9a-f]{64}$/.test(h))return msg('هش باید ۶۴ حرف هگز باشد.','bad');act({hash:h,days:String(+$('#gd').value||30)}).catch(e=>msg('خطا: '+e.message,'bad'))};
-(async()=>{try{C=await (await fetch('config.json')).json()}catch(e){}
- let r=C.repo;if(!r||/^YOUR_/.test(r)){const g=location.hostname.match(/^([^.]+)\.github\.io$/);r=g?g[1]+'/'+(location.pathname.split('/')[1]||g[1]+'.github.io'):''}
- $('#repo').value=r;if(sessionStorage.getItem('adm_t')&&r)login()})();
-</script></body></html>
+</div>
+</body>
+</html>

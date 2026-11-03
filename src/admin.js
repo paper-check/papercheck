@@ -1,0 +1,53 @@
+import '@fontsource-variable/vazirmatn';
+import './style.css';
+try{document.documentElement.dataset.theme=localStorage.getItem('pc_theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){}
+
+const $=s=>document.querySelector(s),el=(t,x,c)=>{const e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;return e};
+const row=(t,cells)=>{const r=el('tr');cells.forEach(c=>{const d=el('td');c instanceof Node?d.append(c):d.textContent=c;r.append(d)});t.append(r)};
+const ago=ms=>{const m=Math.round(ms/6e4);return m<90?m+' دقیقه پیش':m<2880?Math.round(m/60)+' ساعت پیش':Math.round(m/1440)+' روز پیش'};
+let R='',BR='main',C={};
+const api=(p,o={})=>fetch('https://api.github.com'+p,{...o,headers:{Authorization:'Bearer '+(sessionStorage.getItem('adm_t')||''),Accept:'application/vnd.github+json','Content-Type':'application/json'}}).then(async r=>{if(r.status===204)return{};const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.message||r.status);return j});
+const msg=(t,c)=>{$('#msg').textContent=t;$('#msg').className=c||''};
+const btn=(t,f)=>{const b=el('button',t,'btn alt sm');b.onclick=async()=>{b.disabled=true;try{await f()}catch(e){msg('خطا: '+e.message,'bad')}b.disabled=false};return b};
+const act=i=>api(`/repos/${R}/actions/workflows/site.yml/dispatches`,{method:'POST',body:JSON.stringify({ref:BR,inputs:i})}).then(()=>msg('دستور ارسال شد؛ یکی دو دقیقه بعد «تازه‌سازی» را بزن.','ok'));
+const part=async(id,f)=>{try{await f()}catch(e){$(id).textContent='ناموفق: '+e.message}};
+async function load(){
+ ['#kpi','#keys','#issues','#runs','#tr','#pay','#mon'].forEach(s=>$(s).textContent='');
+ $('#al').href='https://github.com/'+R+'/actions';
+ await part('#keys',async()=>{const c=await api(`/repos/${R}/contents/access.json`),ks=JSON.parse(atob(c.content.replace(/\n/g,''))).keys||[],today=new Date().toISOString().slice(0,10),act0=ks.filter(k=>k.exp>=today);
+  [['کل',ks.length],['فعال',act0.length],['منقضی',ks.length-act0.length],['پرداختی فعال',act0.filter(k=>k.plan==='pro').length]].forEach(([n,v])=>{const b=el('div',null,'kpi');b.append(el('b',v),el('span',n));$('#kpi').append(b)});
+  row($('#keys'),['هش','نوع','انقضا','باقی‌مانده','عملیات']);
+  ks.slice().sort((a,b)=>b.exp.localeCompare(a.exp)).forEach(k=>{const left=Math.ceil((Date.parse(k.exp)-Date.now())/864e5),d=el('span');
+   d.append(btn('+۳۰ روز',()=>act({hash:k.h,days:'30'})),btn('لغو',()=>confirm('این کلید لغو شود؟')?act({revoke:k.h}):0));
+   row($('#keys'),[el('code',k.h.slice(0,10)+'…'),k.plan||'-',k.exp,left>=0?left+' روز':'منقضی',d])})});
+ await part('#issues',async()=>{const is=(await api(`/repos/${R}/issues?state=open&per_page=30`)).filter(i=>!i.pull_request);
+  if(!is.length)row($('#issues'),['درخواست بازی نیست.']);
+  is.forEach(i=>{const a=el('a',i.title);a.href=i.html_url;a.target='_blank';a.rel='noopener';const d=el('span');
+   if(i.title.startsWith('[TRIAL]'))d.append(btn('تأیید',()=>api(`/repos/${R}/issues/${i.number}/labels`,{method:'POST',body:JSON.stringify({labels:['approve']})}).then(()=>msg('برچسب زده شد؛ ربات کلید را فعال می‌کند.','ok'))));
+   d.append(btn('بستن',()=>api(`/repos/${R}/issues/${i.number}`,{method:'PATCH',body:JSON.stringify({state:'closed'})}).then(()=>msg('بسته شد.','ok'))));
+   row($('#issues'),[a,ago(Date.now()-Date.parse(i.created_at)),d])})});
+ await part('#runs',async()=>{const runs=(await api(`/repos/${R}/actions/runs?per_page=8`)).workflow_runs||[],sch=runs.find(r=>r.event==='schedule'),age=sch?Date.now()-Date.parse(sch.created_at):null;
+  const f=runs.slice(0,5).filter(r=>r.conclusion==='failure').length;
+  $('#mon').append(el('p',age==null?'اجرای زمان‌بندی‌شده‌ای دیده نشده.':age>3*36e5?'هشدار: آخرین اجرای زمان‌بندی‌شده '+ago(age)+' بوده؛ ممکن است متوقف شده باشد.':'زمان‌بندی فعال است ('+ago(age)+').',age==null||age>3*36e5?'warn':'ok'));
+  if(f)$('#mon').append(el('p',f+' اجرای ناموفق در ۵ اجرای اخیر.','bad'));
+  runs.slice(0,5).forEach(r=>row($('#runs'),[r.event,r.conclusion||r.status,ago(Date.now()-Date.parse(r.created_at))]))});
+ await part('#mon',async()=>{for(const f of ['index.html','config.json','access.json']){const r=await fetch(f+'?'+Date.now());$('#mon').append(el('p','سایت / '+f+': '+(r.ok?'سالم':'خطا '+r.status),r.ok?'ok':'bad'))}
+  if(C.goatcounter){const a=el('a','آمار بازدید (GoatCounter)');a.href='https://'+C.goatcounter+'.goatcounter.com';a.target='_blank';$('#mon').append(a)}});
+ await part('#tr',async()=>{const v=await api(`/repos/${R}/traffic/views`),b=el('div','','bars'),mx=Math.max(1,...v.views.map(x=>x.count));
+  v.views.forEach(x=>{const i=el('i');i.style.height=Math.round(100*x.count/mx)+'%';i.title=x.timestamp.slice(0,10)+': '+x.count;b.append(i)});
+  $('#tr').append(el('p','کل: '+v.count+' | یکتا: '+v.uniques),b);
+  const rf=await api(`/repos/${R}/traffic/popular/referrers`);rf.slice(0,5).forEach(x=>$('#tr').append(el('div',x.referrer+': '+x.count,'m')))});
+ await part('#pay',async()=>{const p=await (await fetch('https://api.trongrid.io/v1/accounts/'+C.wallet+'/transactions/trc20?only_to=true&limit=10&contract_address=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t')).json();
+  (p.data||[]).forEach(x=>row($('#pay'),[(Number(x.value)/1e6)+' USDT',el('code',x.transaction_id.slice(0,12)+'…'),ago(Date.now()-x.block_timestamp)]));
+  if(!(p.data||[]).length)row($('#pay'),['تراکنشی دیده نشد.'])});
+}
+async function login(){const t=$('#tk').value.trim();if(t)sessionStorage.setItem('adm_t',t);R=$('#repo').value.trim();
+ try{const r=await api('/repos/'+R);if(!r.permissions||!r.permissions.push)throw new Error('این توکن دسترسی نوشتن به ریپو ندارد');BR=r.default_branch;$('#tk').value='';$('#lg').hidden=true;$('#app').hidden=false;load()}
+ catch(e){sessionStorage.removeItem('adm_t');$('#lerr').textContent=' ورود ناموفق: '+e.message}}
+$('#in').onclick=login;$('#rf').onclick=load;$('#out').onclick=()=>{sessionStorage.removeItem('adm_t');location.reload()};
+$('#gb').onclick=()=>{const h=$('#gh').value.trim().toLowerCase();if(!/^[0-9a-f]{64}$/.test(h))return msg('هش باید ۶۴ حرف هگز باشد.','bad');act({hash:h,days:String(+$('#gd').value||30)}).catch(e=>msg('خطا: '+e.message,'bad'))};
+(async()=>{try{C=await (await fetch('config.json')).json()}catch(e){}
+ let r=C.repo;if(!r||/^YOUR_/.test(r)){const g=location.hostname.match(/^([^.]+)\.github\.io$/);r=g?g[1]+'/'+(location.pathname.split('/')[1]||g[1]+'.github.io'):''}
+ $('#repo').value=r;if(sessionStorage.getItem('adm_t')&&r)login()})();
+
+$('#theme').onclick=()=>{const n=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('pc_theme',n)}catch(e){}};
