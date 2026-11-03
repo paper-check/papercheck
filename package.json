@@ -8,5 +8,8 @@
   },
   "devDependencies": {
     "vite": "^5.4.0"
+  },
+  "dependencies": {
+    "@fontsource-variable/vazirmatn": "^5.2.0"
   }
 }

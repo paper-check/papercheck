@@ -5,99 +5,89 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PaperCheck</title>
 <meta name="description" content="Check IEEE references and Persian–English abstracts in your browser. بررسی منابع IEEE و چکیدهٔ دوزبانه در مرورگر.">
-<meta name="theme-color" content="#0b1630">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230b1630'/%3E%3Cpath d='M8 17l5 5 11-12' fill='none' stroke='%23e5484d' stroke-width='3.5'/%3E%3C/svg%3E">
-
+<meta name="theme-color" content="#0f766e">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Cpath d='M8 17l5 5 11-12' fill='none' stroke='white' stroke-width='3.5'/%3E%3C/svg%3E">
+<script type="module" src="./src/main.js"></script>
 </head>
 <body>
-<div class="hero"><div class="wrap">
+<div class="wrap">
 <header>
- <span class="brand">PaperCheck</span>
- <div class="tools"><button id="theme" aria-label="Theme">◐</button><div class="lang" role="group" aria-label="Language">
-  <button data-l="fa">فارسی</button><button data-l="en">English</button>
- </div></div>
+ <span class="brand"><i>✓</i>PaperCheck</span>
+ <div class="tools"><button id="theme" aria-label="Theme">◐</button>
+  <div class="lang" role="group" aria-label="Language"><button data-l="fa">فارسی</button><button data-l="en">English</button></div></div>
 </header>
-<div class="hgrid">
+
+<section class="hero"><div class="hgrid">
  <div>
   <h1 data-i="h1"></h1>
   <p class="lead" data-i="lead"></p>
-  <a class="btn acc" href="#tool" data-i="cta"></a><button class="btn ghost" id="sample" data-i="sample"></button>
+  <a class="btn" href="#tool" data-i="cta"></a><button class="btn alt" id="sample" data-i="sample"></button>
+  <div class="facts"><span data-i="f1"></span><span data-i="f2"></span><span data-i="f3"></span></div>
  </div>
  <div class="sheet" aria-hidden="true">
   <div class="ln" style="--d:.4s">[1] A. Rahimi and B. Lee, “Self-supervised features,” IEEE TMI, vol. 41, no. 3, pp. 100–110, 2022.<div class="nt g" data-i="n1"></div></div>
   <div class="ln" style="--d:1.8s">[2] <span class="mk">Chen T., Kornblith S.</span> 2020. A simple framework. ICML.<div class="nt" data-i="n2"></div></div>
   <div class="ln" style="--d:3.2s">[3] M. Sadeghi, “Energy forecasting,” <span class="mk">2021</span>.<div class="nt" data-i="n3"></div></div>
  </div>
-</div>
-</div></div>
-<main>
-<div class="facts"><span data-i="f1"></span><span data-i="f2"></span><span data-i="f3"></span></div>
+</div></section>
 
-<section id="tool">
- <div class="box">
-  <div class="tabs" role="tablist">
-   <button role="tab" data-t="refs" data-i="tabRefs"></button>
-   <button role="tab" data-t="abs" data-i="tabAbs"></button>
-  </div>
-  <div id="p-refs">
-   <label data-i="refsLbl"></label><textarea id="refs" dir="ltr" placeholder="[1] A. Rahimi and B. Lee, “Title,” IEEE Trans. Med. Imaging, vol. 41, no. 3, pp. 100–110, 2022."></textarea>
-   <label data-i="manLbl"></label><textarea id="man" dir="auto" style="min-height:80px"></textarea>
-   <button class="btn" id="goRefs" data-i="check"></button>
-  </div>
-  <div id="p-abs" hidden>
-   <label data-i="faLbl"></label><textarea id="fa" dir="rtl"></textarea>
-   <label data-i="enLbl"></label><textarea id="en" dir="ltr"></textarea>
-   <button class="btn" id="goAbs" data-i="check"></button>
-  </div>
-  <div class="res" id="res" aria-live="polite"></div>
-  <p class="mute" id="plan"></p>
+<section id="tool"><div class="card">
+ <div class="tabs" role="tablist">
+  <button role="tab" data-t="refs" data-i="tabRefs"></button>
+  <button role="tab" data-t="abs" data-i="tabAbs"></button>
  </div>
-</section>
+ <div id="p-refs">
+  <label for="refs" data-i="refsLbl"></label>
+  <textarea id="refs" dir="ltr" placeholder="[1] A. Rahimi and B. Lee, “Title,” IEEE Trans. Med. Imaging, vol. 41, no. 3, pp. 100–110, 2022."></textarea>
+  <details class="adv"><summary data-i="adv"></summary>
+   <label for="man" data-i="manLbl"></label><textarea id="man" dir="auto" style="min-height:90px"></textarea></details>
+  <button class="btn" id="goRefs" data-i="check"></button>
+ </div>
+ <div id="p-abs" hidden>
+  <label for="fa" data-i="faLbl"></label><textarea id="fa" dir="rtl"></textarea>
+  <label for="en" data-i="enLbl"></label><textarea id="en" dir="ltr"></textarea>
+  <button class="btn" id="goAbs" data-i="check"></button>
+ </div>
+ <div class="res" id="res" aria-live="polite"></div>
+ <p class="mute" id="plan"></p>
+</div></section>
 
 <section id="how"><h2 data-i="howH"></h2><div class="grid3">
- <div><b>1</b> <strong data-i="hw1"></strong><p data-i="hw1p"></p></div>
- <div><b>2</b> <strong data-i="hw2"></strong><p data-i="hw2p"></p></div>
- <div><b>3</b> <strong data-i="hw3"></strong><p data-i="hw3p"></p></div></div></section>
-<section id="access">
- <h2 data-i="accH"></h2>
- <p class="mute" data-i="accP"></p>
- <div class="grid">
-  <div class="box">
-   <strong data-i="s1"></strong>
-   <p class="mute" data-i="s1p"></p>
-   <button class="btn alt" id="mk" data-i="mk"></button>
-   <code id="keyOut" hidden></code>
-   <button class="btn alt" id="cp" hidden data-i="copy"></button>
-   <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
-   <label data-i="enter"></label><input id="keyIn" dir="ltr" autocomplete="off" spellcheck="false">
-   <button class="btn" id="unlock" data-i="unlock"></button>
-   <p id="st" class="mute" aria-live="polite"></p>
-  </div>
-  <div class="box">
-   <strong data-i="s2"></strong>
-   <p class="mute" data-i="s2p"></p>
-   <a class="btn alt" id="trialGh" target="_blank" rel="noopener" data-i="trialGh"></a>
-   <a class="btn alt" id="trialMail" data-i="trialMail"></a>
-   <p class="mute" data-i="trialNote"></p>
-  </div>
-  <div class="box">
-   <strong data-i="s3"></strong>
-   <p class="mute" id="payP"></p>
-   <code id="wallet"></code>
-   <ol data-i="payList"></ol>
-   <a class="btn alt" id="payGh" target="_blank" rel="noopener" data-i="payGh"></a>
-   <a class="btn alt" id="payMail" data-i="payMail"></a>
-  </div>
- </div>
+ <div><h3><b>1</b><span data-i="hw1"></span></h3><p data-i="hw1p"></p></div>
+ <div><h3><b>2</b><span data-i="hw2"></span></h3><p data-i="hw2p"></p></div>
+ <div><h3><b>3</b><span data-i="hw3"></span></h3><p data-i="hw3p"></p></div>
+</div></section>
+
+<section id="plans"><h2 data-i="plansH"></h2><div class="plans">
+ <div class="card plan"><h3 data-i="fHead"></h3><div class="price" data-i="fPrice"></div>
+  <ul><li data-i="fl1"></li><li data-i="fl2"></li><li data-i="fl3"></li></ul>
+  <a class="btn alt" href="#tool" data-i="freeCta"></a></div>
+ <div class="card plan pro"><h3 data-i="pHead"></h3><div class="price"><span id="pn">—</span> <small id="pu"></small></div>
+  <ul><li data-i="pl1"></li><li data-i="pl2"></li><li data-i="pl3"></li></ul>
+  <button class="btn" id="get" data-i="proCta"></button></div>
+</div></section>
+
+<section id="faq"><h2 data-i="faqH"></h2>
+ <details><summary data-i="q1"></summary><p data-i="a1"></p></details>
+ <details><summary data-i="q2"></summary><p data-i="a2"></p></details>
+ <details><summary data-i="q3"></summary><p data-i="a3"></p></details>
+ <details><summary data-i="q4"></summary><p data-i="a4"></p></details>
 </section>
 
-<section id="faq"><h2 data-i="faqH"></h2><details><summary data-i="q1"></summary><p data-i="a1"></p></details><details><summary data-i="q2"></summary><p data-i="a2"></p></details><details><summary data-i="q3"></summary><p data-i="a3"></p></details><details><summary data-i="q4"></summary><p data-i="a4"></p></details></section>
-<footer>
- <span data-i="contact"></span> <a id="mail" style="color:inherit"></a>
- <p data-i="priv"></p>
-</footer>
-</main>
+<footer><span data-i="contact"></span> <a id="mail" style="color:inherit"></a><p data-i="priv"></p></footer>
+</div>
+
+<dialog id="dlg"><div class="dbody">
+ <div class="dh"><h2 data-i="dlgH" style="margin:0"></h2><button class="x" id="dx" aria-label="Close">✕</button></div>
+ <div class="stp"><strong data-i="s1"></strong><p class="mute" data-i="s1p"></p>
+  <button class="btn alt" id="mk" data-i="mk"></button><button class="btn alt" id="cp" hidden data-i="copy"></button><code id="keyOut" hidden></code></div>
+ <div class="stp"><strong data-i="s2"></strong><p class="mute" data-i="s2p"></p>
+  <a class="btn alt" id="trialGh" target="_blank" rel="noopener" data-i="trialGh"></a><a class="btn alt" id="trialMail" data-i="trialMail"></a></div>
+ <div class="stp"><strong data-i="s3"></strong><p class="mute" id="payP"></p><code id="wallet"></code><ol data-i="payList"></ol>
+  <a class="btn alt" id="payGh" target="_blank" rel="noopener" data-i="payGh"></a><a class="btn alt" id="payMail" data-i="payMail"></a></div>
+ <div class="stp"><strong data-i="enter"></strong><input id="keyIn" dir="ltr" autocomplete="off" spellcheck="false">
+  <button class="btn" id="unlock" data-i="unlock"></button><p id="st" class="mute" aria-live="polite"></p></div>
+</div></dialog>
 <div id="toast" role="status"></div>
-<script type="module" src="./src/main.js"></script>
 </body>
 </html>
